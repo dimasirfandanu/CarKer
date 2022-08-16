@@ -46,7 +46,7 @@ workPDF = "{}/cv.pdf".format(workDIR)
 # if platform.system() == "Windows":
 #     Halo(text="Using Microsoft Office to create PDF...", spinner="dots").start()
 #     docx2pdf.convert(docxOUT, workPDF)
-with yaspin(text="Using convertapi to convert PDF..."):
+with yaspin(text="Using convertapi to create PDF..."):
     convertapi.api_secret = envs.convertapisecret
     convertapi.convert('pdf', {'File': docxOUT}, from_format = 'docx').save_files(workDIR)
 shutil.copy2(workPDF, "{}/berkas/CV-Oddy-{}-{}.pdf".format(rootDIR, company, position))
