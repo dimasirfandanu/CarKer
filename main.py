@@ -4,9 +4,9 @@ import tempfile
 from zipfile import ZipFile
 import shutil
 import os
-import re
-import sys
-import subprocess
+import platform
+from halo import Halo
+import docx2pdf
 
 # Defining root project directory
 rootDIR = os.path.dirname(os.path.abspath(__file__))
@@ -34,22 +34,15 @@ with open(docXML, "w") as docXMLwrite:
 
 docxOUT = "{}/cv.docx".format(workDIR)
 shutil.make_archive(docxOUT, "zip", workDIR)
-os.rename(docxOUT + ".zip", "{}/cv.docx".format(workDIR)) 
-
-# TODO: search for better function cross-platfrom
-def convert_to(folder, source, timeout=None):
-    args = [libreoffice_exec(), '--headless', '--convert-to', 'pdf', '--outdir', folder, source]
-    process = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=timeout)
-    filename = re.search('-> (.*?) using filter', process.stdout.decode())
-    return filename.group(1)
-def libreoffice_exec():
-    # TODO: Provide support for more platforms
-    if sys.platform == 'darwin':
-        return '/Applications/LibreOffice.app/Contents/MacOS/soffice'
-    return 'libreoffice'
-convert_to(workDIR, docxOUT)
+os.rename("{}.zip".format(docxOUT), "{}/cv.docx".format(workDIR)) 
 
 workPDF = "{}/cv.pdf".format(workDIR)
+if platform.system() == "Linux":
+    Halo(text="Using LibreOffice to create PDF...", spinner="dots").start()
+    os.system("soffice --convert-to pdf {} --outdir {} &> /dev/null".format(docxOUT, workDIR))
+if platform.system() == "Windows":
+    Halo(text="Using Microsoft Office to create PDF...", spinner="dots").start()
+    docx2pdf.convert(workPDF)
 shutil.copy2(workPDF, "{}/berkas/CV-Oddy-{}-{}.pdf".format(rootDIR, company, position))
 
-# TODO: send email
+# TODO: Sending email
