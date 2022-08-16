@@ -42,7 +42,7 @@ if platform.system() == "Linux":
     os.system("soffice --convert-to pdf {} --outdir {} &> /dev/null".format(docxOUT, workDIR))
 if platform.system() == "Windows":
     Halo(text="Using Microsoft Office to create PDF...", spinner="dots").start()
-    docx2pdf.convert(workPDF)
+    docx2pdf.convert(docxOUT, workPDF)
 shutil.copy2(workPDF, "{}/berkas/CV-Oddy-{}-{}.pdf".format(rootDIR, company, position))
 
 # TODO: Sending email
