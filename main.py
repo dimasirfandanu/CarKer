@@ -5,10 +5,10 @@ from zipfile import ZipFile
 import shutil
 import os
 import convertapi
-# import platform
-from halo import Halo
-# import docx2pdf
 import envs
+from yaspin import yaspin
+import platform
+import docx2pdf
 
 # Defining root project directory
 rootDIR = os.path.dirname(os.path.abspath(__file__))
@@ -39,15 +39,16 @@ shutil.make_archive(docxOUT, "zip", workDIR)
 os.rename("{}.zip".format(docxOUT), "{}/cv.docx".format(workDIR)) 
 
 workPDF = "{}/cv.pdf".format(workDIR)
+# TODO: Better cross-platform function
 # if platform.system() == "Linux":
-   #  Halo(text="Using LibreOffice to create PDF...", spinner="dots").start()
-   #  os.system("soffice --convert-to pdf {} --outdir {} &> /dev/null".format(docxOUT, workDIR))
+#     Halo(text="Using LibreOffice to create PDF...", spinner="dots").start()
+#     os.system("soffice --convert-to pdf {} --outdir {} &> /dev/null".format(docxOUT, workDIR))
 # if platform.system() == "Windows":
-   #  Halo(text="Using Microsoft Office to create PDF...", spinner="dots").start()
-   #  docx2pdf.convert(docxOUT, workPDF)
-Halo(text="Using convertapi to convert PDF...", spinner="dots").start()
-convertapi.api_secret = envs.convertapisecret
-convertapi.convert('pdf', {'File': docxOUT}, from_format = 'docx').save_files(workDIR)
+#     Halo(text="Using Microsoft Office to create PDF...", spinner="dots").start()
+#     docx2pdf.convert(docxOUT, workPDF)
+with yaspin(text="Using convertapi to convert PDF..."):
+    convertapi.api_secret = envs.convertapisecret
+    convertapi.convert('pdf', {'File': docxOUT}, from_format = 'docx').save_files(workDIR)
 shutil.copy2(workPDF, "{}/berkas/CV-Oddy-{}-{}.pdf".format(rootDIR, company, position))
 
 # TODO: Sending email
