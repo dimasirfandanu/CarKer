@@ -39,16 +39,17 @@ shutil.make_archive(docxOUT, "zip", workDIR)
 os.rename("{}.zip".format(docxOUT), "{}/cv.docx".format(workDIR)) 
 
 workPDF = "{}/cv.pdf".format(workDIR)
+if platform.system() == "Linux":
+    with yaspin(text="Using libreoffice to create PDF..."):
+        os.system("soffice --convert-to pdf {} --outdir {} &> /dev/null".format(docxOUT, workDIR))
+else:
+    with yaspin(text="Using convertapi to create PDF..."):
+        convertapi.api_secret = envs.convertapisecret
+        convertapi.convert('pdf', {'File': docxOUT}, from_format = 'docx').save_files(workDIR)
+shutil.copy2(workPDF, "{}/berkas/CV-Oddy-{}-{}.pdf".format(rootDIR, company, position))
 # TODO: Better cross-platform function
-# if platform.system() == "Linux":
-#     Halo(text="Using LibreOffice to create PDF...", spinner="dots").start()
-#     os.system("soffice --convert-to pdf {} --outdir {} &> /dev/null".format(docxOUT, workDIR))
 # if platform.system() == "Windows":
 #     Halo(text="Using Microsoft Office to create PDF...", spinner="dots").start()
 #     docx2pdf.convert(docxOUT, workPDF)
-with yaspin(text="Using convertapi to create PDF..."):
-    convertapi.api_secret = envs.convertapisecret
-    convertapi.convert('pdf', {'File': docxOUT}, from_format = 'docx').save_files(workDIR)
-shutil.copy2(workPDF, "{}/berkas/CV-Oddy-{}-{}.pdf".format(rootDIR, company, position))
 
 # TODO: Sending email
