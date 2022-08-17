@@ -12,23 +12,30 @@ import docx2pdf
 from time import sleep
 
 # Init
-with yaspin(text="Loading"):
+with yaspin(text="Loading... "):
     sleep(3)
 
-# Defining global functions
-def taskCOMPLETE():
-    print("✅ Task completed")
+# Asking variables
+source = input("Sumber Lowongan?: ") 
+
+company = input("Nama Perusahaan?: ")
+
+position = input("Posisi?: ")
+
+name = input("Nama Pelamar?: ")
 
 # Defining consts
 rootDIR = os.path.dirname(os.path.abspath(__file__))
 
+berkasUSER = "{}/{}".format(rootDIR, name)
+if os.path.exists(berkasUSER) == False:
+    os.mkdir(berkasUSER)
+
+def taskCOMPLETE():
+    print("✅ Task completed")
+
 # Make working directory
 workDIR = tempfile.mkdtemp()
-
-# Asking variables
-source = input("Sumber Lowongan?: ") 
-company = input("Nama Perusahaan?: ")
-position = input("Posisi?: ")
 
 # Preparing PDF
 with ZipFile("{}/template.docx".format(rootDIR), "r") as workFILES:
@@ -57,10 +64,11 @@ else:
         convertapi.api_secret = envs.convertapisecret
         convertapi.convert('pdf', {'File': docxOUT}, from_format = 'docx').save_files(workDIR)
     taskCOMPLETE()
-shutil.copy2(pdfOUT, "{}/berkas/CV-Oddy-{}-{}.pdf".format(rootDIR, company, position))
+
+shutil.copy2(pdfOUT, "{}/CV-{}-{}-{}.pdf".format(berkasUSER, name, company, position))
 # TODO: Better cross-platform function
 # if platform.system() == "Windows":
-#     Halo(text="Using Microsoft Office to create PDF...", spinner="dots").start()
+#     Halo(text="Using Microsoft Office to create PDF...", spinner="dots").start() # TODO: Migrate to yaspin
 #     docx2pdf.convert(docxOUT, pdfOUT)
 
 # TODO: Sending email
