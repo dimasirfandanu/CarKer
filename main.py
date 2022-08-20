@@ -7,22 +7,21 @@ import os
 import convertapi
 import envs
 from yaspin import yaspin
+from yaspin.spinners import Spinners
+from colorama import Fore
 import platform
 import docx2pdf
 from time import sleep
 
 # Init
-with yaspin(text="Loading... "):
+with yaspin(Spinners.line, text="Loading... "):
     sleep(3)
 
 # Asking variables
-source = input("Sumber Lowongan?: ") 
-
-company = input("Nama Perusahaan?: ")
-
-position = input("Posisi?: ")
-
-name = input("Nama Pelamar?: ")
+source = input("Sumber Lowongan? : ") 
+company = input("Nama Perusahaan? : ")
+position = input("Posisi? : ")
+name = input("Nama Pelamar? : ")
 
 # Defining consts
 rootDIR = os.path.dirname(os.path.abspath(__file__))
@@ -32,7 +31,7 @@ if os.path.exists(berkasUSER) == False:
     os.mkdir(berkasUSER)
 
 def taskCOMPLETE():
-    print("✅ Task completed")
+    print(Fore.GREEN + "(OK) Task completed")
 
 # Make working directory
 workDIR = tempfile.mkdtemp()
@@ -56,11 +55,11 @@ os.rename("{}.zip".format(docxOUT), "{}/cv.docx".format(workDIR))
 
 pdfOUT = "{}/cv.pdf".format(workDIR)
 if platform.system() == "Linux":
-    with yaspin(text="Using libreoffice to create PDF..."):
+    with yaspin(Spinners.line, text="Using libreoffice to create PDF... "):
         os.system("soffice --convert-to pdf {} --outdir {} &> /dev/null".format(docxOUT, workDIR))
     taskCOMPLETE()
 else:
-    with yaspin(text="Using convertapi to create PDF..."):
+    with yaspin(Spinners.line, text="Using convertapi to create PDF... "):
         convertapi.api_secret = envs.convertapisecret
         convertapi.convert('pdf', {'File': docxOUT}, from_format = 'docx').save_files(workDIR)
     taskCOMPLETE()
